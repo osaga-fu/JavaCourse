@@ -1,3 +1,1 @@
 # JavaCourse
-
-## Details
