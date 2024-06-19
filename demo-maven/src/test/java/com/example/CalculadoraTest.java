@@ -37,7 +37,7 @@ class CalculadoraTest {
 		@Nested
 		class OK{
 			
-			@Test
+//			@Test
 			@DisplayName("Suma dos enteros")
 			@RepeatedTest(value = 5, name = "{displayName} {currentRepetition}/{totalRepetitions}")
 			void testAdd() {
