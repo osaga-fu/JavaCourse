@@ -33,7 +33,7 @@ public class Persona {
 	}
 	
 	public void setNombre(String nombre) {
-		if (nombre == null) 
+		if (nombre == null || "".equals(nombre.trim()))
 			throw new IllegalArgumentException("Falta el nombre");
 		this.nombre = nombre;
 	}

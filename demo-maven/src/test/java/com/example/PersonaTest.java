@@ -29,7 +29,7 @@ class PersonaTest {
 			
 			@ParameterizedTest(name = "{0} {1}")
 			@CsvSource(value = {"1,Pepe","2,Mari", "3,María"})
-			@DisplayName("Creacion de persona solo con nombre")
+			@DisplayName("Creacion de persona solo con nombre parametizada")
 			void onlyNameParam(int id, String nombre) {
 				var persona = new Persona(id, nombre);
 				
@@ -43,7 +43,12 @@ class PersonaTest {
 		
 		@Nested
 		class KO {
-			
+			@ParameterizedTest(name = "{0} {1}")
+			@CsvSource(value = {"1,","2,' '", "3,''"})
+			@DisplayName("Creacion de persona con nombre invalido parametizada")
+			void invalidNameParam(int id, String nombre) {
+				assertThrows(Exception.class, ()-> new Persona(id, nombre));
+			}
 		}
 	}
 
