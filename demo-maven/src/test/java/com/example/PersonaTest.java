@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class PersonaTest {
 
@@ -22,6 +24,19 @@ class PersonaTest {
 				assertAll("Persona",
 						()-> assertEquals(1, persona.getId(), "id"),
 						()-> assertEquals("Pepe", persona.getNombre(), "nombre"),
+						()-> assertTrue(persona.getApellidos().isEmpty(), "apellidos"));
+			}
+			
+			@ParameterizedTest(name = "{0} {1}")
+			@CsvSource(value = {"1,Pepe","2,Mari", "3,María"})
+			@DisplayName("Creacion de persona solo con nombre")
+			void onlyNameParam(int id, String nombre) {
+				var persona = new Persona(id, nombre);
+				
+				assertNotNull(persona);
+				assertAll("Persona",
+						()-> assertEquals(id, persona.getId(), "id"),
+						()-> assertEquals(nombre, persona.getNombre(), "nombre"),
 						()-> assertTrue(persona.getApellidos().isEmpty(), "apellidos"));
 			}
 		}
