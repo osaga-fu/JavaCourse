@@ -9,9 +9,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import com.example.core.test.Smoke;
 
 @DisplayName("Pruebas clase calculadora")
 class CalculadoraTest {
@@ -59,6 +62,7 @@ class CalculadoraTest {
 			}
 			
 			@Test
+			@Tag("smoke")
 			@DisplayName("Suma dos flotantes")
 			void testAdd2() {
 				Calculadora calculadora = new Calculadora();
@@ -83,6 +87,7 @@ class CalculadoraTest {
 		@Nested
 		class OK {
 			@Test
+			@Smoke
 			@DisplayName("División de enteros")
 			void testDivInt() {
 				Calculadora calculadora = new Calculadora();
