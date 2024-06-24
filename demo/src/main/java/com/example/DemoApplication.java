@@ -5,6 +5,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.example.domains.contracts.repositories.ActorRepository;
+import com.example.domains.entities.Actor;
 import com.example.ioc.Entorno;
 import com.example.ioc.Rango;
 import com.example.ioc.Saluda;
@@ -15,7 +17,42 @@ public class DemoApplication implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}
+	
+	@Autowired
+	ActorRepository dao;
 
+	@Override
+	public void run(String... args) throws Exception {
+		System.err.println("Aplicacion arrancada...");
+		
+//		var item = dao.findById(1);
+//		if(item.isEmpty()) {
+//			System.err.println("No encontrado");
+//		} else {
+//			System.out.println(item.get());
+//		}
+		
+//		dao.findAll().forEach(System.out::println);
+		
+//		var actor = new Actor(0, "Pepito", "Grillo");
+//		dao.save(actor);
+//		System.out.println(dao.save(actor));
+		
+//		var item = dao.findById(201);
+//		if(item.isEmpty()) {
+//			System.err.println("No encontrado");
+//		} else {
+//			var actor = item.get();
+//			actor.setFirstName(actor.getFirstName().toUpperCase());
+//			dao.save(actor);
+//		}
+		
+		dao.deleteById(201);
+		dao.findAll().forEach(System.out::println);
+		
+	}
+	
+/*
 	@Autowired
 //	@Qualifier("es")
 	Saluda saluda;
@@ -38,5 +75,5 @@ public class DemoApplication implements CommandLineRunner {
 		System.out.println(entorno.getContador());
 		System.out.println(rango.getMin() + " -> " + rango.getMax());
 	}
-
+*/
 }
