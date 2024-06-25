@@ -82,10 +82,6 @@ public class Film extends EntityBase<Film> implements Serializable {
 	@OneToMany(mappedBy="film", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<FilmCategory> filmCategories;
 
-	//bi-directional many-to-one association to Inventory
-//	@OneToMany(mappedBy="film")
-//	private List<Inventory> inventories;
-
 	public Film() {
 	}
 	
@@ -97,8 +93,6 @@ public class Film extends EntityBase<Film> implements Serializable {
 		this.filmId = filmId;
 		this.title = title;
 	}
-	
-	
 
 	public Film(int filmId, String description, @Positive int length, String rating, Short releaseYear,
 			byte rentalDuration, @Digits(integer = 2, fraction = 2) @Positive BigDecimal rentalRate,

@@ -3,6 +3,7 @@ package com.example.domains.entities;
 import java.io.Serializable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -44,6 +45,7 @@ public class Actor extends EntityBase<Actor> implements Serializable {
 
 	@Column(name="last_update", insertable=false, updatable=false, nullable=false)
 	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	@PastOrPresent
 	private Timestamp lastUpdate;
 
 	//bi-directional many-to-one association to FilmActor
