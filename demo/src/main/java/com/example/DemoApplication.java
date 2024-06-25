@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import com.example.domains.contracts.repositories.ActorRepository;
+import com.example.domains.contracts.services.ActorService;
 import com.example.domains.entities.Actor;
 import com.example.domains.entities.models.ActorDTO;
 import com.example.domains.entities.models.ActorOtroDTO;
@@ -29,12 +30,22 @@ public class DemoApplication implements CommandLineRunner {
 	}
 	
 	@Autowired
-	ActorRepository dao;
-
-	@Override
-	@Transactional
-	public void run(String... args) throws Exception {
+	ActorService srv;
+	
+	public void run(String...ars) throws Exception{
 		System.err.println("Aplicacion arrancada...");
+		srv.getByProjection(ActorDTO.class).forEach(System.out::println);
+	}
+	
+	
+	/*
+//	@Autowired
+//	ActorRepository dao;
+//
+//	@Override
+//	@Transactional
+//	public void run(String... args) throws Exception {
+//		System.err.println("Aplicacion arrancada...");
 		
 //		var item = dao.findById(1);
 //		if(item.isEmpty()) {
