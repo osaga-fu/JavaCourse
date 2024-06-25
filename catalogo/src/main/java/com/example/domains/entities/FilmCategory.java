@@ -2,6 +2,8 @@ package com.example.domains.entities;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.sql.Timestamp;
 
 
@@ -24,15 +26,25 @@ public class FilmCategory implements Serializable {
 	//bi-directional many-to-one association to Category
 	@ManyToOne
 	@JoinColumn(name="category_id", nullable=false, insertable=false, updatable=false)
+	@NotNull
 	private Category category;
 
 	//bi-directional many-to-one association to Film
 	@ManyToOne
 	@JoinColumn(name="film_id", nullable=false, insertable=false, updatable=false)
+	@NotNull
 	private Film film;
 
 	public FilmCategory() {
 	}
+
+	
+	public FilmCategory(@NotNull Category category, @NotNull Film film) {
+		this.category = category;
+		this.film = film;
+		setId(new FilmCategoryPK(film.getFilmId(), category.getCategoryId()));
+	}
+
 
 	public FilmCategoryPK getId() {
 		return this.id;

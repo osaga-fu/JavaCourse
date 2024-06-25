@@ -2,6 +2,12 @@ package com.example.domains.entities;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
@@ -31,6 +37,7 @@ public class Film extends EntityBase<Film> implements Serializable {
 	@Column(name="last_update", insertable=false, updatable=false, nullable=false)
 	private Timestamp lastUpdate;
 
+	@Positive
 	private int length;
 
 	@Column(length=1)
@@ -43,17 +50,23 @@ public class Film extends EntityBase<Film> implements Serializable {
 	private byte rentalDuration;
 
 	@Column(name="rental_rate", nullable=false, precision=10, scale=2)
+	@Digits(integer=2, fraction=2)
+	@Positive
 	private BigDecimal rentalRate;
 
 	@Column(name="replacement_cost", nullable=false, precision=10, scale=2)
+	@Digits(integer=3, fraction=2)
 	private BigDecimal replacementCost;
 
 	@Column(nullable=false, length=128)
+	@NotBlank
+	@Size(max = 128)
 	private String title;
 
 	//bi-directional many-to-one association to Language
 	@ManyToOne
 	@JoinColumn(name="language_id", nullable=false)
+	@NotNull
 	private Language language;
 
 	//bi-directional many-to-one association to Language
@@ -75,10 +88,34 @@ public class Film extends EntityBase<Film> implements Serializable {
 
 	public Film() {
 	}
+	
+	public Film(int filmId) {
+		this.filmId = filmId;
+	}
 
 	public Film(int filmId, String title) {
 		this.filmId = filmId;
 		this.title = title;
+	}
+	
+	
+
+	public Film(int filmId, String description, @Positive int length, String rating, Short releaseYear,
+			byte rentalDuration, @Digits(integer = 2, fraction = 2) @Positive BigDecimal rentalRate,
+			@Digits(integer = 3, fraction = 2) BigDecimal replacementCost, @NotBlank @Size(max = 128) String title,
+			@NotNull Language language, Language languageVO) {
+		super();
+		this.filmId = filmId;
+		this.description = description;
+		this.length = length;
+		this.rating = rating;
+		this.releaseYear = releaseYear;
+		this.rentalDuration = rentalDuration;
+		this.rentalRate = rentalRate;
+		this.replacementCost = replacementCost;
+		this.title = title;
+		this.language = language;
+		this.languageVO = languageVO;
 	}
 
 	public int getFilmId() {

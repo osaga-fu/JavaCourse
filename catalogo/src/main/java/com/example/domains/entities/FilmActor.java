@@ -3,6 +3,7 @@ package com.example.domains.entities;
 import java.io.Serializable;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -37,6 +38,13 @@ public class FilmActor implements Serializable {
 
 	public FilmActor() {
 	}
+	
+	public FilmActor(Film film, Actor actor) {
+		super();
+		this.film = film;
+		this.actor = actor;
+		setId(new FilmActorPK(film.getFilmId(), actor.getActorId()));
+	}
 
 	public FilmActorPK getId() {
 		return this.id;
@@ -70,4 +78,5 @@ public class FilmActor implements Serializable {
 		this.film = film;
 	}
 
+	
 }
