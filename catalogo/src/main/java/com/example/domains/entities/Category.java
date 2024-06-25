@@ -2,6 +2,8 @@ package com.example.domains.entities;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import java.sql.Timestamp;
@@ -31,11 +33,13 @@ public class Category extends EntityBase<Category> implements Serializable {
 
 	@Column(name="last_update", insertable=false, updatable=false, nullable=false)
 	@JsonIgnore
+	@PastOrPresent
 	private Timestamp lastUpdate;
 
 	@Column(nullable=false, length=25)
 	@JsonProperty("categoria")
-	@Size(max=25, min=2)
+	@Size(max=25)
+	@NotBlank
 	private String name;
 
 	//bi-directional many-to-one association to FilmCategory
@@ -44,6 +48,10 @@ public class Category extends EntityBase<Category> implements Serializable {
 	private List<FilmCategory> filmCategories;
 
 	public Category() {
+	}
+	
+	public Category(int categoryId) {
+		this.categoryId = categoryId;
 	}
 
 	public Category(int categoryId, String name) {
