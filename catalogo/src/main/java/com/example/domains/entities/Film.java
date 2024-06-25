@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 
 import com.example.domains.core.entities.EntityBase;
 
@@ -220,26 +221,36 @@ public class Film extends EntityBase<Film> implements Serializable {
 		return filmCategory;
 	}
 
-//	public List<Inventory> getInventories() {
-//		return this.inventories;
-//	}
-//
-//	public void setInventories(List<Inventory> inventories) {
-//		this.inventories = inventories;
-//	}
-//
-//	public Inventory addInventory(Inventory inventory) {
-//		getInventories().add(inventory);
-//		inventory.setFilm(this);
-//
-//		return inventory;
-//	}
-//
-//	public Inventory removeInventory(Inventory inventory) {
-//		getInventories().remove(inventory);
-//		inventory.setFilm(null);
-//
-//		return inventory;
-//	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(filmId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Film other = (Film) obj;
+		return filmId == other.filmId;
+	}
+
+	@Override
+	public String toString() {
+		return "Film [filmId=" + filmId + ", description=" + description + ", lastUpdate=" + lastUpdate + ", length="
+				+ length + ", rating=" + rating + ", releaseYear=" + releaseYear + ", rentalDuration=" + rentalDuration
+				+ ", rentalRate=" + rentalRate + ", replacementCost=" + replacementCost + ", title=" + title
+				+ ", language=" + language + ", languageVO=" + languageVO + ", filmActors=" + filmActors
+				+ ", filmCategories=" + filmCategories + "]";
+	}
+
+	
+
+	
+
+	
 
 }

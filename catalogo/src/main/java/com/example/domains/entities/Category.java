@@ -4,6 +4,7 @@ import java.io.Serializable;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 
 import com.example.domains.core.entities.EntityBase;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -92,5 +93,30 @@ public class Category extends EntityBase<Category> implements Serializable {
 
 		return filmCategory;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(categoryId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Category other = (Category) obj;
+		return categoryId == other.categoryId;
+	}
+
+	@Override
+	public String toString() {
+		return "Category [categoryId=" + categoryId + ", lastUpdate=" + lastUpdate + ", name=" + name
+				+ ", filmCategories=" + filmCategories + "]";
+	}
+	
+	
 
 }
