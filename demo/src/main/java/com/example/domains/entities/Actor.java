@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.example.domains.core.entities.EntityBase;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 /**
@@ -42,6 +44,7 @@ public class Actor extends EntityBase<Actor> implements Serializable {
 
 	//bi-directional many-to-one association to FilmActor
 	@OneToMany(mappedBy="actor", fetch = FetchType.LAZY)
+	@JsonBackReference
 	private List<FilmActor> filmActors;
 
 	public Actor() {

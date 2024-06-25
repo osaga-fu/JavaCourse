@@ -100,8 +100,18 @@ public class DemoApplication implements CommandLineRunner {
 //		dao.findAll(PageRequest.of(1, 10, Sort.by("ActorId"))).forEach(System.out::println);
 //		dao.findByActorIdGreaterThanEqual(200, ActorOtroDTO.class).forEach(System.out::println);
 	
+//		var serializa = new ObjectMapper();
+//		dao.findByActorIdGreaterThanEqual(200, ActorDTO.class)
+//		.forEach(item -> {
+//			try {
+//				System.out.println(serializa.writeValueAsString(item));
+//			} catch (JsonProcessingException e) {
+//				e.printStackTrace();
+//			}
+//		});
+		
 		var serializa = new ObjectMapper();
-		dao.findByActorIdGreaterThanEqual(200, ActorDTO.class)
+		dao.findAll(PageRequest.of(1, 10, Sort.by("ActorId")))
 		.forEach(item -> {
 			try {
 				System.out.println(serializa.writeValueAsString(item));
@@ -110,6 +120,8 @@ public class DemoApplication implements CommandLineRunner {
 			}
 		});
 	}
+	
+	
 	
 /*
 	@Autowired
