@@ -17,6 +17,7 @@ import com.example.ioc.Rango;
 import com.example.ioc.Saluda;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import jakarta.transaction.Transactional;
 
@@ -110,7 +111,7 @@ public class DemoApplication implements CommandLineRunner {
 //			}
 //		});
 		
-		var serializa = new ObjectMapper();
+		var serializa = new XmlMapper();
 		dao.findAll(PageRequest.of(1, 10, Sort.by("ActorId")))
 		.forEach(item -> {
 			try {
