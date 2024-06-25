@@ -2,6 +2,8 @@ package com.example.domains.entities;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +35,7 @@ public class Category extends EntityBase<Category> implements Serializable {
 
 	@Column(nullable=false, length=25)
 	@JsonProperty("categoria")
+	@Size(max=25, min=2)
 	private String name;
 
 	//bi-directional many-to-one association to FilmCategory
