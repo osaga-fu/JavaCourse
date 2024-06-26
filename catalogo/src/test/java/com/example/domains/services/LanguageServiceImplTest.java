@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.example.domains.contracts.repositories.CategoryRepository;
 import com.example.domains.contracts.repositories.LanguageRepository;
+import com.example.domains.contracts.services.LanguageService;
 import com.example.domains.entities.Language;
 import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
@@ -31,7 +31,7 @@ class LanguageServiceImplTest {
 	    private LanguageRepository languageRepository;
 
 	    @Autowired
-	    private LanguageServiceImpl languageService;
+	    private LanguageService languageService;
 	    
 	    @Nested
 	    @DisplayName("Valid Tests")

@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.domains.contracts.repositories.CategoryRepository;
+import com.example.domains.contracts.services.CategoryService;
 import com.example.domains.entities.Category;
 import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
@@ -27,7 +28,7 @@ public class CategoryServiceImplTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private CategoryServiceImpl categoryService;
+    private CategoryService categoryService;
     
     @Nested
     @DisplayName("Valid Tests")

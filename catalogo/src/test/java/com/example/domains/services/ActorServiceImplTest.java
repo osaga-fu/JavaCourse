@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.domains.contracts.repositories.ActorRepository;
+import com.example.domains.contracts.services.ActorService;
 import com.example.domains.entities.Actor;
 import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
@@ -28,7 +29,7 @@ public class ActorServiceImplTest {
     private ActorRepository actorRepository;
 
     @Autowired
-    private ActorServiceImpl actorService;
+    private ActorService actorService;
     
     @Nested
     @DisplayName("Valid Tests")
