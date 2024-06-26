@@ -40,7 +40,7 @@ public class Actor extends EntityBase<Actor> implements Serializable {
 	@Column(name="last_name", nullable=false, length=45)
 	private String lastName;
 
-	@Column(name="last_update", insertable=false, updatable=false, nullable=false)
+	@Column(name="last_update", insertable=false, updatable=false/*, nullable=false*/)
 	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
 	private Timestamp lastUpdate;
 
