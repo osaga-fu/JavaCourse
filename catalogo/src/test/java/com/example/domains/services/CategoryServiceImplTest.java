@@ -101,9 +101,15 @@ public class CategoryServiceImplTest {
             categoryService.deleteById(1);
 
             verify(categoryRepository, times(1)).deleteById(1);
-        }
-        
-        @Test
+        } 
+       
+    }
+
+    
+    @Nested
+    @DisplayName("Invalid Tests")
+    class Invalid {
+    	@Test
         void testAddInvalid() throws DuplicateKeyException, InvalidDataException {
             when(categoryRepository.save(any(Category.class))).thenReturn(null, null);
             
@@ -111,13 +117,6 @@ public class CategoryServiceImplTest {
             
             verify(categoryRepository, times(0)).save(null);
         }
-    }
-
-    
-    @Nested
-    @DisplayName("Invalid Tests")
-    class Invalid {
- 
     }
     
 }
