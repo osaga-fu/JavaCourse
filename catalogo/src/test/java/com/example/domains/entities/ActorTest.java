@@ -33,18 +33,6 @@ class ActorTest {
         @DisplayName("Successful Instanciation")
         class Successful {
 
-            @Test
-            @DisplayName("Create actor with all fields")
-            void createActorWithAllFields() {
-                
-                var actor = new Actor(1, "ANA", "SUAREZ");              
-
-                assertNotNull(actor);
-                assertAll("Actor",
-                        () -> assertEquals(1, actor.getActorId(), "actorId"),
-                        () -> assertEquals("ANA", actor.getFirstName(), "firstName"),
-                        () -> assertEquals("SUAREZ", actor.getLastName(), "lastName"));
-            }
 
             @ParameterizedTest(name = "{0} {1} {2}")
             @CsvSource(value = {"1,ANA,SUAREZ", "2,PEPI,FERNANDEZ", "3,MARCOS,FERNANDEZ"})
@@ -65,7 +53,7 @@ class ActorTest {
         class Unsuccessful {
         	 
         	 @ParameterizedTest(name = "{0} {1} {2}")
-             @CsvSource(value = {"1,a,SUAREZ", "2,,PEREZ", "3,'',FERNANDEZ"})
+             @CsvSource(value = {"1,a,SUAREZ", "2,,PEREZ", "3,'',FERNANDEZ", "4,EL SOL BRILLA EN EL CIELO CLARO Y AZUL DEL VERANO,SANCHEZ"})
              @DisplayName("Create actor with invalid name parameterized")
              void createActorWithInvalidName(int actorId, String firstName, String lastName) {
                  var actor = new Actor(actorId, firstName, lastName);
