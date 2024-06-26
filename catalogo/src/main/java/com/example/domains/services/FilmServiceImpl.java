@@ -15,6 +15,8 @@ import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
 import com.example.exceptions.NotFoundException;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class FilmServiceImpl implements FilmService {
 	
@@ -60,6 +62,7 @@ public class FilmServiceImpl implements FilmService {
 	}
 
 	@Override
+	@Transactional
 	public Film add(Film item) throws DuplicateKeyException, InvalidDataException {
 		if(item == null) {
 			throw new InvalidDataException("No puede ser nulo");
@@ -70,7 +73,18 @@ public class FilmServiceImpl implements FilmService {
 		if(item.getFilmId() != 0 && dao.existsById(item.getFilmId())) {
 			throw new DuplicateKeyException("Ya existe");
 		}
-		return dao.save(item);
+		var actors = item.getActors();
+		var categories = item.getCategories();
+		
+		item.clearActors();
+		item.clearCategories();
+		
+		var newItem = dao.save(item);
+		
+		newItem.setActors(actors);
+		newItem.setCategories(categories);
+		
+		return dao.save(newItem);
 	}
 
 	@Override
