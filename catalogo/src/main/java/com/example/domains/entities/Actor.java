@@ -3,6 +3,7 @@ package com.example.domains.entities;
 import java.io.Serializable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -34,12 +35,13 @@ public class Actor extends EntityBase<Actor> implements Serializable {
 
 	@Column(name="first_name", nullable=false, length=45)
 	@NotBlank
-	@Size(max=45, min=2)
+	@Size(max=45)
 	@Pattern(regexp = "^[A-Z]+$", message = "Tiene que estar en mayusculas")
 	private String firstName;
 
 	@Column(name="last_name", nullable=false, length=45)
-	@Size(max=45, min=2)
+	@Size(max=45)
+	@NotBlank
 	@Pattern(regexp = "^[A-Z]+$", message = "Tiene que estar en mayusculas")
 	private String lastName;
 
