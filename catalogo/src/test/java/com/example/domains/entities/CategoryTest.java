@@ -40,7 +40,7 @@ class CategoryTest {
             
             @ParameterizedTest(name = "{0} {1} {2}")
             @CsvSource(value = {"1,Category1", "2,Category2", "3,Last Category"})
-            @DisplayName("Create actor with only required fields parameterized")
+            @DisplayName("Create category with only required fields parameterized")
             void createCategoryWithOnlyRequiredFields(int categoryId, String name) {
                 var category = new Category(categoryId, name);
                 
