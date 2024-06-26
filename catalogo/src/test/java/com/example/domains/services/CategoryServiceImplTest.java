@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.domains.contracts.repositories.CategoryRepository;
+import com.example.domains.entities.Actor;
 import com.example.domains.entities.Category;
 import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
@@ -117,6 +118,14 @@ public class CategoryServiceImplTest {
             
             verify(categoryRepository, times(0)).save(null);
         }
+    	
+    	@Test
+    	void testAddDuplicateKeyInvalid() throws DuplicateKeyException, InvalidDataException {
+    		when(categoryRepository.findById(1)).thenReturn(Optional.of(new Category(1, "Category A")));
+    		when(categoryRepository.existsById(1)).thenReturn(true);
+    		
+    		assertThrows(DuplicateKeyException.class, () -> categoryService.add(new Category(1, "Category Duplicated")));
+    	}
     }
     
 }

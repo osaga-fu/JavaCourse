@@ -1,6 +1,7 @@
 package com.example.domains.services;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.domains.contracts.repositories.ActorRepository;
 import com.example.domains.entities.Actor;
+import com.example.domains.entities.Category;
 import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
 import com.example.exceptions.NotFoundException;
@@ -105,6 +107,28 @@ public class ActorServiceImplTest {
 
             verify(actorRepository, times(1)).deleteById(1);
         }
-    }    
+    } 
+    
+    @Nested
+    @DisplayName("Invalid Tests")
+    class Invalid {
+    	@Test
+        void testAddInvalid() throws DuplicateKeyException, InvalidDataException {
+            when(actorRepository.save(any(Actor.class))).thenReturn(null, null);
+            
+            assertThrows(InvalidDataException.class, () -> actorService.add(null));
+            
+            verify(actorRepository, times(0)).save(null);
+        }
+    	
+    	@Test
+    	void testAddDuplicateKeyKO() throws DuplicateKeyException, InvalidDataException {
+    		when(actorRepository.findById(1)).thenReturn(Optional.of(new Actor(1, "JAMES", "SMITH")));
+    		when(actorRepository.existsById(1)).thenReturn(true);
+    		
+    		assertThrows(DuplicateKeyException.class, () -> actorService.add(new Actor(1, "PP", "ILLO")));
+    	}
+
+    }
 }
 
