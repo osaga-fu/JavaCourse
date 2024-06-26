@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.domains.contracts.repositories.ActorRepository;
 import com.example.domains.entities.Actor;
-import com.example.domains.entities.Category;
 import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
 import com.example.exceptions.NotFoundException;
@@ -79,7 +78,7 @@ public class ActorServiceImplTest {
 
         @Test
         void testModify() throws NotFoundException, InvalidDataException {
-            Actor actor = new Actor(1, "JAMES", "SMITH");
+            Actor actor = new Actor(1, "JUAN", "SMITH");
             when(actorRepository.existsById(1)).thenReturn(true);
             when(actorRepository.save(actor)).thenReturn(actor);
 
@@ -87,7 +86,7 @@ public class ActorServiceImplTest {
 
             assertNotNull(result);
             assertEquals(1, result.getActorId());
-            assertEquals("JAMES", result.getFirstName());
+            assertEquals("JUAN", result.getFirstName());
             assertEquals("SMITH", result.getLastName());
             verify(actorRepository, times(1)).existsById(1);
             verify(actorRepository, times(1)).save(actor);
@@ -122,7 +121,7 @@ public class ActorServiceImplTest {
         }
     	
     	@Test
-    	void testAddDuplicateKeyKO() throws DuplicateKeyException, InvalidDataException {
+    	void testAddDuplicateKeyInvalid() throws DuplicateKeyException, InvalidDataException {
     		when(actorRepository.findById(1)).thenReturn(Optional.of(new Actor(1, "JAMES", "SMITH")));
     		when(actorRepository.existsById(1)).thenReturn(true);
     		

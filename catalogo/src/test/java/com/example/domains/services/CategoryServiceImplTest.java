@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.domains.contracts.repositories.CategoryRepository;
-import com.example.domains.entities.Actor;
 import com.example.domains.entities.Category;
 import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
@@ -76,7 +75,7 @@ public class CategoryServiceImplTest {
 
         @Test
         void testModify() throws NotFoundException, InvalidDataException {
-            Category category = new Category(1, "Category A");
+            Category category = new Category(1, "Category X");
             when(categoryRepository.existsById(1)).thenReturn(true);
             when(categoryRepository.save(category)).thenReturn(category);
 
@@ -84,7 +83,7 @@ public class CategoryServiceImplTest {
 
             assertNotNull(result);
             assertEquals(1, result.getCategoryId());
-            assertEquals("Category A", result.getName());
+            assertEquals("Category X", result.getName());
             verify(categoryRepository, times(1)).existsById(1);
             verify(categoryRepository, times(1)).save(category);
         }
