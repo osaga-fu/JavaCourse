@@ -73,6 +73,16 @@ class ActorTest {
                  assertFalse(violations.isEmpty(), "Expected validation violations but found none");
                  violations.forEach(v -> System.out.println(v.getPropertyPath() + ": " + v.getMessage()));
              }
+        	 
+        	 @ParameterizedTest(name = "{0} {1} {2}")
+             @CsvSource(value = {"1,MARI,", "2,LAURA,fernandez", "3,LUIS,' '"})
+             @DisplayName("Create actor with invalid name parameterized")
+             void createActorWithInvalidLastName(int actorId, String firstName, String lastName) {
+                 var actor = new Actor(actorId, firstName, lastName);
+                 var violations = actor.getErrors();
+                 assertFalse(violations.isEmpty(), "Expected validation violations but found none");
+                 violations.forEach(v -> System.out.println(v.getPropertyPath() + ": " + v.getMessage()));
+             }
         }
     }
 
