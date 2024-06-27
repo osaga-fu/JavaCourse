@@ -1,20 +1,29 @@
 package com.example.domains.entities;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
+@DisplayName("Film Tests")
 class FilmTest {
+    private static Validator validator;
+
+    @BeforeAll
+    static void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
 
     @Nested
     @DisplayName("Instanciation Tests")
@@ -24,50 +33,25 @@ class FilmTest {
         @DisplayName("Successful Instanciation")
         class Successful {
 
-            @Test
-            @DisplayName("Create film with id and title")
-            void createFilmWithIdAndTitle() {
-                var film = new Film(1, "Inception");
+            @ParameterizedTest(name = "{0}, {1}, {2}, {3}, {4}, {5}")
+            @CsvSource(value = {
+                "1,Tenet,2,5,2.99,19.99",
+                "2,Tootsie,3,7,3.99,24.99"
+            })
+            @DisplayName("Create film with only required fields parameterized")
+            void createFilmWithOnlyRequiredFields(int filmId, String title, int languageId, byte rentalDuration,
+                                                  BigDecimal rentalRate, BigDecimal replacementCost) {
+                var language = new Language(languageId, "English");
+                var film = new Film(filmId, title, language, rentalDuration, rentalRate, replacementCost);
 
                 assertNotNull(film);
                 assertAll("Film",
-                        () -> assertEquals(1, film.getFilmId(), "id"),
-                        () -> assertEquals("Inception", film.getTitle(), "title"));
-            }
-
-            @ParameterizedTest(name = "{0} {1}")
-            @CsvSource(value = {"1,Inception", "2,Interstellar", "3,Tenet"})
-            @DisplayName("Create film with id and title parameterized")
-            void createFilmWithIdAndTitleParam(int id, String title) {
-                var film = new Film(id, title);
-
-                assertNotNull(film);
-                assertAll("Film",
-                        () -> assertEquals(id, film.getFilmId(), "id"),
-                        () -> assertEquals(title, film.getTitle(), "title"));
-            }
-
-            @Test
-            @DisplayName("Create full film object")
-            void createFullFilm() {
-                var language = new Language(1, "English");
-                var rentalRate = new BigDecimal("2.99");
-                var replacementCost = new BigDecimal("19.99");
-
-                var film = new Film(1, "A great film", 120, "PG-13", (short) 2020, (byte) 5, rentalRate, replacementCost, "Inception", language, null);
-
-                assertNotNull(film);
-                assertAll("Film",
-                        () -> assertEquals(1, film.getFilmId(), "id"),
-                        () -> assertEquals("A great film", film.getDescription(), "description"),
-                        () -> assertEquals(120, film.getLength(), "length"),
-                        () -> assertEquals("PG-13", film.getRating(), "rating"),
-                        () -> assertEquals((short) 2020, film.getReleaseYear(), "releaseYear"),
-                        () -> assertEquals((byte) 5, film.getRentalDuration(), "rentalDuration"),
+                        () -> assertEquals(filmId, film.getFilmId(), "filmId"),
+                        () -> assertEquals(title, film.getTitle(), "title"),
+                        () -> assertEquals(language, film.getLanguage(), "language"),
+                        () -> assertEquals(rentalDuration, film.getRentalDuration(), "rentalDuration"),
                         () -> assertEquals(rentalRate, film.getRentalRate(), "rentalRate"),
-                        () -> assertEquals(replacementCost, film.getReplacementCost(), "replacementCost"),
-                        () -> assertEquals("Inception", film.getTitle(), "title"),
-                        () -> assertEquals(language, film.getLanguage(), "language"));
+                        () -> assertEquals(replacementCost, film.getReplacementCost(), "replacementCost"));
             }
         }
 
@@ -75,48 +59,82 @@ class FilmTest {
         @DisplayName("Unsuccessful Instanciation")
         class Unsuccessful {
 
-            @ParameterizedTest(name = "{0} {1}")
+            @ParameterizedTest(name = "{0}, {1}, {2}, {3}, {4}, {5}")
             @CsvSource(value = {
-                    "1,", 
-                    "2,'   '",
-                    "3,Una película increíblemente larga con un título interminable que sigue y sigue sin parar, alcanzando la impresionante longitud de 128 caracteres"
+                "1,,2,5,2.99,19.99",
+                "2,Invalid Language,,7,3.99,24.99",
+                "3,Invalid Rate,3,5,-1.99,19.99",
+                "4,Invalid Cost,3,7,3.99,-24.99"
             })
-            @DisplayName("Create film with invalid title parameterized")
-            void createFilmWithInvalidTitle(int id, String title) {
-                assertThrows(Exception.class, () -> new Film(id, title));
-            }
+            @DisplayName("Create film with invalid parameters")
+            void createFilmWithInvalidParameters(int filmId, String title, Integer languageId, Byte rentalDuration,
+                                                 BigDecimal rentalRate, BigDecimal replacementCost) {
+                Language language = languageId == null ? null : new Language(languageId, "English");
+                var film = new Film(filmId, title, language, rentalDuration, rentalRate, replacementCost);
+                var violations = validator.validate(film);
 
-            @ParameterizedTest(name = "{0} {1} {2} {3}")
-            @CsvSource(value = {
-                    "1,Inception,-10,2.99,19.99,1",
-                    "2,Interstellar,0,2.99,19.99,1"
-            })
-            @DisplayName("Create film with invalid length parameterized")
-            void createFilmWithInvalidLength(int id, String title, int length, BigDecimal rentalRate, BigDecimal replacementCost, int languageId) {
-                assertThrows(Exception.class, () -> new Film(id, title, length, "PG-13", (short) 2020, (byte) 5, rentalRate, replacementCost, title, new Language(languageId), null));
+                assertFalse(violations.isEmpty(), "Expected validation violations but found none");
+                violations.forEach(v -> System.out.println(v.getPropertyPath() + ": " + v.getMessage()));
             }
+        }
+    }
 
-            @ParameterizedTest(name = "{0} {1} {2} {3}")
-            @CsvSource(value = {
-                    "1,Inception,2.99,-19.99,1",
-                    "2,Interstellar,2.99,0,1"
-            })
-            @DisplayName("Create film with invalid replacement cost parameterized")
-            void createFilmWithInvalidReplacementCost(int id, String title, BigDecimal rentalRate, BigDecimal replacementCost, int languageId) {
-                assertThrows(Exception.class, () -> new Film(id, title, 120, "PG-13", (short) 2020, (byte) 5, rentalRate, replacementCost, title, new Language(languageId), null));
-            }
+    @Nested
+    @DisplayName("Method Tests")
+    class MethodTests {
 
-            @ParameterizedTest(name = "{0} {1} {2} {3}")
-            @CsvSource(value = {
-                    "1,Inception,2.99,19.99,''",
-                    "2,Interstellar,2.99,19.99,'   '"
-            })
-            @DisplayName("Create film with invalid language parameterized")
-            void createFilmWithInvalidLanguage(int id, String title, BigDecimal rentalRate, BigDecimal replacementCost, String languageName) {
-                var language = new Language(1, languageName);
-                assertThrows(Exception.class, () -> new Film(id, title, 120, "PG-13", (short) 2020, (byte) 5, rentalRate, replacementCost, title, language, null));
-            }
-        
+        @Test
+        @DisplayName("Test add actor")
+        void testAddActor() {
+            var film = new Film(1, "Sample Film", new Language(1, "English"), (byte) 5, new BigDecimal("2.99"), new BigDecimal("19.99"));
+            var actor = new Actor(1, "John", "Doe");
+            film.clearActors();
+
+            film.addActor(actor);
+            assertAll("Add Actor",
+                    () -> assertEquals(1, film.getActors().size(), "size"),
+                    () -> assertTrue(film.getActors().contains(actor), "contains"));
+        }
+
+        @Test
+        @DisplayName("Test remove actor")
+        void testRemoveActor() {
+            var film = new Film(1, "Sample Film", new Language(1, "English"), (byte) 5, new BigDecimal("2.99"), new BigDecimal("19.99"));
+            var actor = new Actor(1, "John", "Doe");
+            film.clearActors();
+            film.addActor(actor);
+
+            film.removeActor(actor);
+            assertAll("Remove Actor",
+                    () -> assertEquals(0, film.getActors().size(), "size"),
+                    () -> assertFalse(film.getActors().contains(actor), "contains"));
+        }
+
+        @Test
+        @DisplayName("Test add category")
+        void testAddCategory() {
+            var film = new Film(1, "Sample Film", new Language(1, "English"), (byte) 5, new BigDecimal("2.99"), new BigDecimal("19.99"));
+            var category = new Category(1, "Action");
+            film.clearCategories();
+
+            film.addCategory(category);
+            assertAll("Add Category",
+                    () -> assertEquals(1, film.getCategories().size(), "size"),
+                    () -> assertTrue(film.getCategories().contains(category), "contains"));
+        }
+
+        @Test
+        @DisplayName("Test remove category")
+        void testRemoveCategory() {
+            var film = new Film(1, "Sample Film", new Language(1, "English"), (byte) 5, new BigDecimal("2.99"), new BigDecimal("19.99"));
+            var category = new Category(1, "Action");
+            film.clearCategories();
+            film.addCategory(category);
+
+            film.removeCategory(category);
+            assertAll("Remove Category",
+                    () -> assertEquals(0, film.getCategories().size(), "size"),
+                    () -> assertFalse(film.getCategories().contains(category), "contains"));
         }
     }
 }

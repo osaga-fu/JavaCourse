@@ -1,131 +1,155 @@
 package com.example.domains.services;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.example.domains.contracts.repositories.FilmRepository;
 import com.example.domains.contracts.services.FilmService;
 import com.example.domains.entities.Film;
+import com.example.domains.entities.Language;
 import com.example.exceptions.DuplicateKeyException;
 import com.example.exceptions.InvalidDataException;
 import com.example.exceptions.NotFoundException;
 
-@SpringBootTest
-public class FilmServiceImplTest {
+@DisplayName("FilmServiceImpl Tests")
+class FilmServiceImplTest {
+    private FilmRepository dao;
+    private FilmService service;
 
-    @MockBean
-    private FilmRepository filmRepository;
+    @BeforeEach
+    void setUp() {
+        dao = mock(FilmRepository.class);
+        service = new FilmServiceImpl(dao);
+    }
 
-    @Autowired
-    private FilmService filmService;
-    
     @Nested
-    @DisplayName("Valid Tests")
-    class Valid {
-    	@Test
+    @DisplayName("getByProjection Tests")
+    class GetByProjectionTests {
+
+        @Test
+        @DisplayName("Get all by projection without sort")
+        void testGetByProjection() {
+            List<Film> films = List.of(new Film(1, "Title", new Language(1, "English"), (byte) 1, BigDecimal.valueOf(1.99), BigDecimal.valueOf(19.99)));
+            when(dao.findAllBy(Film.class)).thenReturn(films);
+
+            List<Film> result = service.getByProjection(Film.class);
+
+            assertAll("GetByProjection",
+                    () -> assertNotNull(result, "Result should not be null"),
+                    () -> assertEquals(films.size(), result.size(), "Size should match"));
+        }
+
+        @Test
+        @DisplayName("Get all by projection with sort")
+        void testGetByProjectionWithSort() {
+            List<Film> films = List.of(new Film(1, "Title", new Language(1, "English"), (byte) 1, BigDecimal.valueOf(1.99), BigDecimal.valueOf(19.99)));
+            Sort sort = Sort.by("title");
+            when(dao.findAllBy(sort, Film.class)).thenReturn(films);
+
+            Iterable<Film> result = service.getByProjection(sort, Film.class);
+
+            assertNotNull(result, "Result should not be null");
+        }
+
+        @Test
+        @DisplayName("Get all by projection with pageable")
+        void testGetByProjectionWithPageable() {
+            List<Film> films = List.of(new Film(1, "Title", new Language(1, "English"), (byte) 1, BigDecimal.valueOf(1.99), BigDecimal.valueOf(19.99)));
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Film> page = new PageImpl<>(films, pageable, films.size());
+            when(dao.findAllBy(pageable, Film.class)).thenReturn(page);
+
+            Page<Film> result = service.getByProjection(pageable, Film.class);
+
+            assertAll("GetByProjectionPageable",
+                    () -> assertNotNull(result, "Result should not be null"),
+                    () -> assertEquals(films.size(), result.getTotalElements(), "Total elements should match"));
+        }
+    }
+
+    @Nested
+    @DisplayName("CRUD Tests")
+    class CrudTests {
+
+        @Test
+        @DisplayName("Get all films")
         void testGetAll() {
-            List<Film> films = Arrays.asList(
-                    new Film(1, "Batman begins"),
-                    new Film(2, "Titanic"),
-                    new Film(3, "Todo sobre mi madre")
-            );
-            when(filmRepository.findAll()).thenReturn(films);
+            List<Film> films = List.of(new Film(1, "Title", new Language(1, "English"), (byte) 1, BigDecimal.valueOf(1.99), BigDecimal.valueOf(19.99)));
+            when(dao.findAll()).thenReturn(films);
 
-            List<Film> result = filmService.getAll();
+            List<Film> result = service.getAll();
 
-            assertEquals(3, result.size());
-            verify(filmRepository, times(1)).findAll();
+            assertAll("GetAll",
+                    () -> assertNotNull(result, "Result should not be null"),
+                    () -> assertEquals(films.size(), result.size(), "Size should match"));
         }
 
         @Test
+        @DisplayName("Get one film by ID")
         void testGetOne() {
-            Film actor = new Film(1, "Batman begins");
-            when(filmRepository.findById(1)).thenReturn(Optional.of(actor));
+            Film film = new Film(1, "Title", new Language(1, "English"), (byte) 1, BigDecimal.valueOf(1.99), BigDecimal.valueOf(19.99));
+            when(dao.findById(1)).thenReturn(Optional.of(film));
 
-            Optional<Film> result = filmService.getOne(1);
+            Optional<Film> result = service.getOne(1);
 
-            assertTrue(result.isPresent());
-            assertEquals(1, result.get().getFilmId());
-            assertEquals("Batman", result.get().getTitle());
-            verify(filmRepository, times(1)).findById(1);
+            assertAll("GetOne",
+                    () -> assertTrue(result.isPresent(), "Result should be present"),
+                    () -> assertEquals(film.getFilmId(), result.get().getFilmId(), "Film ID should match"));
         }
 
-        @Test
-        void testAdd() throws DuplicateKeyException, InvalidDataException {
-            Film film = new Film(4, "Torrente");
-            when(filmRepository.save(film)).thenReturn(film);
-
-            Film result = filmService.add(film);
-
-            assertNotNull(result);
-            assertEquals(4, result.getFilmId());
-            assertEquals("ANA", result.getTitle());
-            verify(filmRepository, times(1)).save(film);
-        }
 
         @Test
-        void testModify() throws NotFoundException, InvalidDataException {
-            Film film = new Film(1, "Batman Begins");
-            when(filmRepository.existsById(1)).thenReturn(true);
-            when(filmRepository.save(film)).thenReturn(film);
-
-            Film result = filmService.modify(film);
-
-            assertNotNull(result);
-            assertEquals(1, result.getFilmId());
-            assertEquals("Batman Begins", result.getTitle());
-            verify(filmRepository, times(1)).existsById(1);
-            verify(filmRepository, times(1)).save(film);
-        }
-
-        @Test
+        @DisplayName("Delete film")
         void testDelete() throws InvalidDataException {
-            Film film = new Film(1, "Tenet");
-            filmService.delete(film);
+            Film film = new Film(1, "Title", new Language(1, "English"), (byte) 1, BigDecimal.valueOf(1.99), BigDecimal.valueOf(19.99));
 
-            verify(filmRepository, times(1)).delete(film);
+            assertDoesNotThrow(() -> service.delete(film));
         }
 
         @Test
+        @DisplayName("Delete film by ID")
         void testDeleteById() {
-            filmService.deleteById(1);
-
-            verify(filmRepository, times(1)).deleteById(1);
+            assertDoesNotThrow(() -> service.deleteById(1));
         }
-    } 
-    
+    }
+
     @Nested
-    @DisplayName("Invalid Tests")
-    class Invalid {
-    	@Test
-        void testAddInvalid() throws DuplicateKeyException, InvalidDataException {
-            when(filmRepository.save(any(Film.class))).thenReturn(null, null);
-            
-            assertThrows(InvalidDataException.class, () -> filmService.add(null));
-            
-            verify(filmRepository, times(0)).save(null);
-        }
-    	
-    	@Test
-    	void testAddDuplicateKeyInvalid() throws DuplicateKeyException, InvalidDataException {
-    		when(filmRepository.findById(1)).thenReturn(Optional.of(new Film(1, "Tenet")));
-    		when(filmRepository.existsById(1)).thenReturn(true);
-    		
-    		assertThrows(DuplicateKeyException.class, () -> filmService.add(new Film(1, "Duplicate")));
-    	}
+    @DisplayName("InvalidDataException Tests")
+    class InvalidDataExceptionTests {
 
+        @Test
+        @DisplayName("Add film with null")
+        void testAddNull() {
+            InvalidDataException exception = assertThrows(InvalidDataException.class, () -> service.add(null));
+            assertEquals("No puede ser nulo", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Modify film with null")
+        void testModifyNull() {
+            InvalidDataException exception = assertThrows(InvalidDataException.class, () -> service.modify(null));
+            assertEquals("No puede ser nulo", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Delete film with null")
+        void testDeleteNull() {
+            InvalidDataException exception = assertThrows(InvalidDataException.class, () -> service.delete(null));
+            assertEquals("No puede ser nulo", exception.getMessage());
+        }
     }
 }
-

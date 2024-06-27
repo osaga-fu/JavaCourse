@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 /**
  * The persistent class for the film_category database table.
@@ -20,29 +22,28 @@ public class FilmCategory implements Serializable {
 	@EmbeddedId
 	private FilmCategoryPK id;
 
-	@Column(name="last_update", insertable=false, updatable=false, nullable=false)
+	@Column(name="last_update", insertable=false, updatable=false)
 	private Timestamp lastUpdate;
 
 	//bi-directional many-to-one association to Category
 	@ManyToOne
-	@JoinColumn(name="category_id", nullable=false, insertable=false, updatable=false)
-	@NotNull
+	@JoinColumn(name="category_id", insertable=false, updatable=false)
+	@JsonManagedReference
 	private Category category;
 
 	//bi-directional many-to-one association to Film
 	@ManyToOne
-	@JoinColumn(name="film_id", nullable=false, insertable=false, updatable=false)
-	@NotNull
+	@JoinColumn(name="film_id", insertable=false, updatable=false)
+	@JsonManagedReference
 	private Film film;
 
 	public FilmCategory() {
 	}
 
 	
-	public FilmCategory(@NotNull Category category, @NotNull Film film) {
-		this.category = category;
+	public FilmCategory(Film film, Category category) {
 		this.film = film;
-		setId(new FilmCategoryPK(film.getFilmId(), category.getCategoryId()));
+		this.category = category;
 	}
 
 
@@ -76,6 +77,13 @@ public class FilmCategory implements Serializable {
 
 	public void setFilm(Film film) {
 		this.film = film;
+	}
+	
+	@PrePersist
+	void prePersiste() {
+		if (id == null) {
+			setId(new FilmCategoryPK(film.getFilmId(), category.getCategoryId()));
+		}
 	}
 
 }
