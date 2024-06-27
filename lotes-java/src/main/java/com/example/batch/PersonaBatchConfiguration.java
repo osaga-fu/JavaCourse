@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -34,7 +35,7 @@ public class PersonaBatchConfiguration {
 	
 	public FlatFileItemReader<PersonaDTO> personaCSVItemReader(String fname) {
 		return new FlatFileItemReaderBuilder<PersonaDTO>().name("personaCSVItemReader")
-				.resource(new FileSystemResource(fname))
+				.resource(new ClassPathResource(fname))
 				.linesToSkip(1)
 				.delimited()
 				.names(new String[] { "id", "nombre", "apellidos", "correo", "sexo", "ip" })
@@ -61,7 +62,7 @@ public class PersonaBatchConfiguration {
 	public Step importCSV2DBStep1(JdbcBatchItemWriter<Persona> personaDBItemWriter) {
 		return new StepBuilder("importCSV2DBStep1", jobRepository)
 				.<PersonaDTO, Persona>chunk(10, transactionManager)
-				.reader(personaCSVItemReader("input/personas-1.csv"))
+				.reader(personaCSVItemReader("personas-1.csv"))
 				.processor(personaItemProcessor)
 				.writer(personaDBItemWriter)
 				.build();
