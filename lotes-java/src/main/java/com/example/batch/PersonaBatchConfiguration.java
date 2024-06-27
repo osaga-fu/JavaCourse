@@ -2,7 +2,10 @@ package com.example.batch;
 
 import javax.sql.DataSource;
 
+import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
@@ -58,9 +61,18 @@ public class PersonaBatchConfiguration {
 	public Step importCSV2DBStep1(JdbcBatchItemWriter<Persona> personaDBItemWriter) {
 		return new StepBuilder("importCSV2DBStep1", jobRepository)
 				.<PersonaDTO, Persona>chunk(10, transactionManager)
-				.reader(personaCSVItemReader("personas-1.csv"))
+				.reader(personaCSVItemReader("input/personas-1.csv"))
 				.processor(personaItemProcessor)
 				.writer(personaDBItemWriter)
+				.build();
+	}
+	
+	@Bean
+	public Job personasJob(PersonaJobListener listener, Step importCSV2DBStep1) {
+		return new JobBuilder("personasJob", jobRepository)
+				.incrementer(new RunIdIncrementer())
+				.listener(listener)
+				.start(importCSV2DBStep1)
 				.build();
 	}
 }
