@@ -2,7 +2,9 @@ package com.example.batch;
 
 import javax.sql.DataSource;
 
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
@@ -50,5 +52,15 @@ public class PersonaBatchConfiguration {
 					.sql("INSERT INTO personas VALUES (:id,:nombre,:correo,:ip)")
 					.dataSource(dataSource)
 					.build();
+	}
+	
+	@Bean
+	public Step importCSV2DBStep1(JdbcBatchItemWriter<Persona> personaDBItemWriter) {
+		return new StepBuilder("importCSV2DBStep1", jobRepository)
+				.<PersonaDTO, Persona>chunk(10, transactionManager)
+				.reader(personaCSVItemReader("personas-1.csv"))
+				.processor(personaItemProcessor)
+				.writer(personaDBItemWriter)
+				.build();
 	}
 }
