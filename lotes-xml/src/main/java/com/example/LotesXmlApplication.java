@@ -13,6 +13,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 @SpringBootApplication
 public class LotesXmlApplication implements CommandLineRunner {
+
 	public static void main(String[] args) {
 		SpringApplication.run(LotesXmlApplication.class, args);
 	}
@@ -23,12 +24,12 @@ public class LotesXmlApplication implements CommandLineRunner {
 		JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
 		Job job = (Job) context.getBean("csvConverterJob");
 		try {
-			JobParameters jobParameters = new JobParametersBuilder().addLong("time", System.currentTimeMillis())
-					.toJobParameters();
+			JobParameters jobParameters = new JobParametersBuilder() .addLong("time",System.currentTimeMillis()).toJobParameters();
 			JobExecution execution = jobLauncher.run(job, jobParameters);
 			System.out.println("Exit Status : " + execution.getStatus());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
 }
