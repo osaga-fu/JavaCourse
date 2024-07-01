@@ -1,5 +1,6 @@
 package com.example.domains.contracts.repositories;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -29,6 +30,8 @@ public interface ActorRepository extends JpaRepository<Actor, Integer>, JpaSpeci
 	List<ActorShort> queryByActorIdGreaterThanEqual(int actorId);
 
 	<T> List<T> findByActorIdGreaterThanEqual(int actorId, Class<T> proyeccion);
+	
+	List<Actor> findByLastUpdateGreaterThanEqualOrderByLastUpdate(Timestamp fecha);
 
 
 }
