@@ -1,5 +1,6 @@
 package com.example.domains.services;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,6 +102,9 @@ public class LanguageServiceImpl implements LanguageService{
 		
 	}
 
-	
+	@Override
+	public List<Language> novedades(Timestamp fecha) {
+		return dao.findByLastUpdateGreaterThanEqualOrderByLastUpdate(fecha);
+	}
 
 }

@@ -1,5 +1,6 @@
 package com.example.domains.services;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,6 +103,11 @@ public class ActorServiceImpl implements ActorService{
 
 	@Override
 	public void repartePremios() {
+	}
+	
+	@Override
+	public List<Actor> novedades(Timestamp fecha) {
+		return dao.findByLastUpdateGreaterThanEqualOrderByLastUpdate(fecha);
 	}
 	
 	

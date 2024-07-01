@@ -1,5 +1,6 @@
 package com.example.domains.services;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import com.example.exceptions.InvalidDataException;
 import com.example.exceptions.NotFoundException;
 
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 
 @Service
 public class FilmServiceImpl implements FilmService {
@@ -113,6 +115,11 @@ public class FilmServiceImpl implements FilmService {
 	public void deleteById(Integer id) {
 		dao.deleteById(id);
 		
+	}
+	
+	@Override
+	public List<Film> novedades(@NonNull Timestamp fecha) {
+		return dao.findByLastUpdateGreaterThanEqualOrderByLastUpdate(fecha);
 	}
 
 }
