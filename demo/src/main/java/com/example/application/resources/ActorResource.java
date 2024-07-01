@@ -73,6 +73,16 @@ public class ActorResource {
 				.toList();
 	}
 	
+	@DeleteMapping(path = "/{id}/retirement")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public void retire(@PathVariable int id) throws NotFoundException{
+		var item = srv.getOne(id);
+		if(item.isEmpty()) {
+			throw new NotFoundException();
+		}
+		item.get().jubilate();
+	}
+	
 	@PostMapping
 	public ResponseEntity<Object> create(@Valid @RequestBody ActorDTO item) throws BadRequestException, DuplicateKeyException, InvalidDataException {
 		var newItem = srv.add(ActorDTO.from(item));
